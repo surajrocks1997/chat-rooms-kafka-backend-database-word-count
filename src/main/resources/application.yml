@@ -1,0 +1,44 @@
+spring:
+  cloud:
+    function:
+      definition: wordCount
+    stream:
+      kafka:
+        streams:
+          bindings:
+            wordCount-in-0:
+              consumer:
+                keySerde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                valueSerde: org.apache.kafka.common.serialization.Serdes$LongSerde
+
+          binder:
+            configuration:
+              commit.interval.ms: 2000
+        binder:
+          brokers:
+            - localhost:9092
+        bindings:
+          wordCount-in-0:
+            consumer:
+              configuration:
+                group-id: my-consumer-group
+                value:
+                  deserializer: org.apache.kafka.common.serialization.Serdes$LongSerde
+
+      bindings:
+        wordCount-in-0:
+          destination: chat-room-aggregator-word-count
+
+
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # cleans up database at every startup
+    show-sql: true
+    properties:
+      format_sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/chat_room_kafka
+    username: root
+    password: admin
+    driver-class-name: com.mysql.cj.jdbc.Driver
